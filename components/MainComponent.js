@@ -5,7 +5,8 @@ import { View ,Platform} from 'react-native';
 import Dishdetail from './DishDetailComponent';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import Home from './HomeComponent';
 
 const Stack = createStackNavigator();
 
@@ -17,11 +18,22 @@ function MyStack() {
     </Stack.Navigator>
   );
 }
+const Drawer = createDrawerNavigator();
+
+function MyDrawer() {
+  return (
+    <Drawer.Navigator>
+      <Drawer.Screen name="Home" component={Home} />
+      <Drawer.Screen name="Menu" component={MyStack} />
+      
+    </Drawer.Navigator>
+  );
+}
 class Main extends Component {
   render() {
     return (
       <View style={{flex:1, paddingTop: Platform.OS === 'ios' ? 0 : Expo.Constants.statusBarHeight }}>
-            <NavigationContainer><MyStack /></NavigationContainer>
+            <NavigationContainer><MyDrawer/></NavigationContainer>
       </View>
     );
   }
