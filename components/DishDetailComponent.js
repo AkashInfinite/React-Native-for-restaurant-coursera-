@@ -1,7 +1,9 @@
-import React from 'react';
+import React ,{Component}from 'react';
 import { Text, View } from 'react-native';
 import { Card } from 'react-native-elements';
-
+import {DISHES, DiSHES} from '../shared/dishes';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 function RenderDish(props) {
 
     const dish = props.dish;
@@ -22,8 +24,21 @@ function RenderDish(props) {
         }
 }
 
-function Dishdetail(props) {
-    return(<RenderDish dish={props.dish} />);
+class Dishdetail extends Component {
+    constructor(props){
+        super(props);
+        this.state={
+            dishes:DISHES
+        }
+    }
+    static navigationOptions={
+        title:'Dishdetail'
+    }
+    render(){
+        const dishId=this.props.route.params.dishId;
+
+        return(<RenderDish dish={this.state.dishes[0+dishId]} />);
+    }
 }
 
 export default Dishdetail;
