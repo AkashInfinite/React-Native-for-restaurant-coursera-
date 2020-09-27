@@ -20,12 +20,18 @@ function MyStack() {
 }
 const Drawer = createDrawerNavigator();
 
+const st=createStackNavigator();
+function MySt(){
+  return (<Stack.Navigator>
+    <Stack.Screen name="Home" component={Home}/>
+  </Stack.Navigator>
+  );
+}
 function MyDrawer() {
   return (
     <Drawer.Navigator>
-      <Drawer.Screen name="Home" component={Home} />
+      <Drawer.Screen name="Home" component={MySt} />
       <Drawer.Screen name="Menu" component={MyStack} />
-      
     </Drawer.Navigator>
   );
 }
