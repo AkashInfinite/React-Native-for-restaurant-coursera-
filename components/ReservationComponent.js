@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button, Modal } from 'react-native';
+import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button, Modal ,Alert} from 'react-native';
 import { Card } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import * as Animatable from'react-native-animatable';
 class Reservation extends Component {
 
     constructor(props) {
@@ -23,7 +23,16 @@ class Reservation extends Component {
 
     handleReservation() {
         console.log(JSON.stringify(this.state));
-        this.toggleModal();
+        //this.toggleModal();
+        Alert.alert(
+            'Your Reservation OK?',
+            'Number of Guest: '+this.state.guests+'\nSmoking?: '+this.state.smoking+'\nDate and Time: '+this.state.date,
+            [
+                {text: 'Cancel', onPress: () => this.resetForm(), style: 'cancel'},
+                {text: 'OK', onPress: () => {this.resetForm()}},
+            ],
+                { cancelable: false }
+        );
     }
 
     resetForm() {
@@ -46,6 +55,7 @@ class Reservation extends Component {
       };
     render() {
         return(
+            <Animatable.View animation="zoomIn"  duration={2000} delay={1000}>
             <ScrollView>
                 <View style={styles.formRow}>
                 <Text style={styles.formLabel}>Number of Guests</Text>
@@ -101,7 +111,6 @@ class Reservation extends Component {
                         <Text style = {styles.modalText}>Number of Guests: {this.state.guests}</Text>
                         <Text style = {styles.modalText}>Smoking?: {this.state.smoking ? 'Yes' : 'No'}</Text>
                         <Text style = {styles.modalText}>Date and Time: {this.state.date.toString()}</Text>
-                        
                         <Button 
                             onPress = {() =>{this.toggleModal(); this.resetForm();}}
                             color="#512DA8"
@@ -109,7 +118,7 @@ class Reservation extends Component {
                             />
                     </View>
                 </Modal>
-            </ScrollView>
+            </ScrollView></Animatable.View>
         );
     }
 
