@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button, Modal ,Alert} from 'react-native';
 import { Card } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import * as Animatable from'react-native-animatable';
+import * as Permissions from 'expo-permissions';
+import * as Animatable from 'react-native-animatable';
+import * as Notifications from 'expo-notifications';
 class Reservation extends Component {
 
     constructor(props) {
@@ -29,7 +31,9 @@ class Reservation extends Component {
             'Number of Guest: '+this.state.guests+'\nSmoking?: '+this.state.smoking+'\nDate and Time: '+this.state.date,
             [
                 {text: 'Cancel', onPress: () => this.resetForm(), style: 'cancel'},
-                {text: 'OK', onPress: () => {this.resetForm()}},
+                {text: 'OK', onPress: () => {
+                    this.presentLocalNotification(this.state.date);
+                    this.resetForm()}},
             ],
                 { cancelable: false }
         );
@@ -45,6 +49,41 @@ class Reservation extends Component {
             show:false
         });
     }
+    async obtainNotificationPermission() {
+        let permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
+        if (permission.status !== 'granted') {
+            permission = await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
+            if (permission.status !== 'granted') {
+                Alert.alert('Permission not granted to show notifications');
+            }
+        }
+        else{
+            console.log('granted');
+        }
+        return permission;
+    }
+
+    async presentLocalNotification(date) {
+        await this.obtainNotificationPermission();
+        Notifications.setNotificationHandler({
+            handleNotification: async () => ({
+              shouldShowAlert: true,
+              shouldPlaySound: true,
+              shouldSetBadge: false,
+            }),
+          });
+          
+          // Second, call the method
+          
+          Notifications.scheduleNotificationAsync({
+            content: {
+              title: 'Your Reservation',
+              body: "Reservation for"+date+"requested",
+            },
+            trigger: null,
+          });
+    }
+    
     static navigationOptions = {
         title: 'Reserve Table',
     };
