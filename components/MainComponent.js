@@ -139,6 +139,7 @@ function Mylogin({navigation}){
     </Stack.Navigator>
   );
 }
+
 const CustomDrawerContentComponent = (props) => (
   <ScrollView>
     <SafeAreaView style={styles.container} forceInset={{ top: 'always', horizontal: 'never' }}>
