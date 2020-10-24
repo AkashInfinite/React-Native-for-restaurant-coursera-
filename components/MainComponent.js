@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Menu from './MenuComponent';
-import { View ,Platform ,SafeAreaView ,Image ,StyleSheet , ScrollView , Text, PanResponder} from 'react-native';
+import { View ,Platform ,SafeAreaView ,Image ,StyleSheet , ScrollView , Text, PanResponder, ToastAndroid} from 'react-native';
+import NetInfo from "@react-native-community/netinfo"; 
 import Dishdetail from './DishDetailComponent';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -53,7 +54,7 @@ function MyStack({navigation}) {
 }
 const Drawer = createDrawerNavigator();
 
-const St=createStackNavigator();
+
 function MySt({navigation}){
   return (<Stack.Navigator>
     <Stack.Screen name="Home" options={{
@@ -68,7 +69,7 @@ function MySt({navigation}){
   </Stack.Navigator>
   );
 }
-const Cont=createStackNavigator();
+
 function MyCont({navigation}){
   return(<Stack.Navigator>
     <Stack.Screen name="Contact" options={{
@@ -82,7 +83,7 @@ function MyCont({navigation}){
                 color: "#fff" }}} component={Contact}/>
   </Stack.Navigator>);
 }
-const Abt=createStackNavigator();
+
 function MyAbt({navigation}){
   return (<Stack.Navigator>
     <Stack.Screen name="About Us" options={{
@@ -96,7 +97,6 @@ function MyAbt({navigation}){
                 color: "#fff" }}} component={About}/>
   </Stack.Navigator>);
 }
-const Reserve=createStackNavigator();
 function MyReserve({navigation}){
   return(
     <Stack.Navigator>
@@ -111,7 +111,7 @@ function MyReserve({navigation}){
     </Stack.Navigator>
   );
 }
-const fav=createStackNavigator();
+
 function MyFav({navigation}){
   return(
     <Stack.Navigator>
@@ -125,7 +125,7 @@ function MyFav({navigation}){
     </Stack.Navigator>
   );
 }
-const login=createStackNavigator();
+
 function Mylogin({navigation}){
   return(
     <Stack.Navigator>
@@ -237,7 +237,38 @@ class Main extends Component {
     this.props.fetchComments();
     this.props.fetchPromos();
     this.props.fetchLeaders();
+    NetInfo.fetch()
+        .then((connectionInfo) => {
+            ToastAndroid.show('Initial Network Connectivity Type: '
+                + connectionInfo.type + ', effectiveType: ' + connectionInfo.isConnected,
+                ToastAndroid.LONG)
+        });
+
+    NetInfo.addEventListener((state)=>{this.handleConnectivityChange});
   }
+  componentWillUnmount() {
+    NetInfo.addEventListener((state)=>{ this.handleConnectivityChange });
+  }
+
+  handleConnectivityChange = (connectionInfo) => {
+    switch (connectionInfo.type) {
+      case 'none':
+        ToastAndroid.show('You are now offline!', ToastAndroid.LONG);
+        break;
+      case 'wifi':
+        ToastAndroid.show('You are now connected to WiFi!', ToastAndroid.LONG);
+        break;
+      case 'cellular':
+        ToastAndroid.show('You are now connected to Cellular!', ToastAndroid.LONG);
+        break;
+      case 'unknown':
+        ToastAndroid.show('You now have unknown connection!', ToastAndroid.LONG);
+        break;
+      default:
+        break;
+    }
+  }
+
   render() {
     return (
       <View style={{flex:1, paddingTop: Platform.OS === 'ios' ? 0 : Expo.Constants.statusBarHeight }}>

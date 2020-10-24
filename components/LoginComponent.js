@@ -6,6 +6,7 @@ import { baseUrl } from '../shared/baseUrl';
 import * as Permissions from 'expo-permissions';
 import * as SecureStore from 'expo-secure-store';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 class LoginTab extends Component {
 
     constructor(props) {
@@ -144,18 +145,41 @@ class RegisterTab extends Component {
             });
             if (!capturedImage.cancelled) {
                 console.log(capturedImage);
-                this.setState({imageUrl: capturedImage.uri });
+                this.processImage(capturedImage.uri);
             }
         }
+    }
+    openImagePickerAsync = async () => {
+        let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
+        if (permissionResult.granted === false) {
+          alert("Permission to access camera roll is required!");
+          return;
+        }
+        let pickerResult = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing:true}
+        );
+        //console.log(pickerResult);
+        this.processImage(pickerResult.uri);
+      }
+
+    processImage = async (imageUri) => {
+        let processedImage = await ImageManipulator.manipulateAsync(
+            imageUri,
+            [
+                {resize: {width: 400}}
+            ],
+            {format: 'png'}
+        );
+        console.log(processedImage);
+        this.setState({imageUrl: processedImage.uri });
 
     }
-    
     static navigationOptions = {
         title: 'Register',
         tabBarIcon: ({ tintColor, focused }) => (
             <Icon
               name='user-plus'
-              type='font-awesome'            
+              type='font-awesome'
               size={24}
               iconStyle={{ color: tintColor }}
             />
@@ -179,10 +203,16 @@ class RegisterTab extends Component {
                         loadingIndicatorSource={require('./images/logo.png')}
                         style={styles.image} 
                         />
-                    <Button
-                        title="Camera"
-                        onPress={this.getImageFromCamera}
-                        />
+                    <View style={styles.spacing}>
+                        <Button
+                            title="Camera"
+                            onPress={this.getImageFromCamera}
+                            />
+                        <Button 
+                            title="Gallery"
+                            onPress={this.openImagePickerAsync}
+                            />
+                    </View>
                 </View>
                 <Input
                     placeholder="Username"
@@ -249,6 +279,12 @@ class RegisterTab extends Component {
 }
 
 const styles = StyleSheet.create({
+    spacing:{
+        margin:20,
+        flex:1,
+        flexDirection:'row',
+        justifyContent:"space-around",
+    },
     container: {
         justifyContent: 'center',
         margin: 20,
@@ -284,11 +320,15 @@ const Login=()=> {
                 activeBackgroundColor: '#9575CD',
                 inactiveBackgroundColor: '#D1C4E9',
                 activeTintColor: '#ffffff',
-                inactiveTintColor: 'gray'
+                inactiveTintColor: 'gray',
+                labelStyle:{
+                    fontSize:20,
+                    fontWeight:'bold',
+                }
             }}
             >
-            <Tab.Screen name="Login" component={LoginTab} />
-            <Tab.Screen name="Register" component={RegisterTab} />
+            <Tab.Screen name="Login" component={LoginTab}  />
+            <Tab.Screen name="Register" component={RegisterTab}  />
         </Tab.Navigator>
     );
 }

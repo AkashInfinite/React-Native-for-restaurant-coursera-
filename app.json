@@ -5,6 +5,13 @@
     "name": "confusion",
     "slug": "confusion",
     "version": "1.0.0",
+    "icon":"./icon.png",
+    "android":{
+      "package":"net.food.confusion.confusion"
+    },
+    "ios":{
+      "bundleIdentifier":"net.food.confusion.confusion"
+    },
     "assetBundlePatterns": [
       "**/*"
     ]
